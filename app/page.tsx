@@ -18,8 +18,12 @@ export default function Home() {
       </h1>
 
       {/* Desktop logo */}
-      <h1 className="hidden md:block font-heading md:text-8xl lg:text-[120px] xl:text-[140px] text-neutral-900 absolute top-1/3 left-16 lg:left-24 xl:left-32 -translate-y-1/2 z-10"
-        style={{ lineHeight: '0.9' }}>
+      <h1 className="hidden md:block font-heading md:text-8xl lg:text-[120px] xl:text-[140px] text-neutral-900 absolute z-10"
+        style={{
+          lineHeight: '0.9',
+          top: '10vh',
+          left: '15vw'
+        }}>
         angel.rent
       </h1>
 
