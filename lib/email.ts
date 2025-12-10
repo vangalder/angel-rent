@@ -73,7 +73,11 @@ export async function sendWaitlistNotification(
     const locationString = locationParts.length > 0 ? locationParts.join(', ') : 'No disponible'
 
     const msg = {
-        to: 'trevor@vangalder.com',
+        to: [
+            'trevor@vangalder.com',
+            'abriltllz@gmail.com',
+            'abril_tellez@icloud.com'
+        ],
         from: 'trevor@vangalder.com', // Must be a verified sender in SendGrid
         subject: 'Nueva Inscripción a la Lista de Espera - angel.rent',
         text: `
@@ -86,6 +90,7 @@ ${data.geolocation ? `Ubicación: ${locationString}` : ''}
 
 ---
 angel.rent - The Art of Staying
+Visita: https://angel.rent
     `.trim(),
         html: `
       <!DOCTYPE html>
@@ -115,6 +120,13 @@ angel.rent - The Art of Staying
           <p style="color: #666; font-size: 14px; margin-top: 30px; line-height: 1.5;">
             Esta notificación fue enviada desde el sistema de lista de espera de angel.rent.
           </p>
+          
+          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E6E6E6;">
+            <a href="https://angel.rent" 
+               style="display: inline-block; padding: 12px 24px; background-color: #C89B5D; color: #2D2D2D; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+              Visitar angel.rent
+            </a>
+          </div>
         </div>
       </body>
       </html>
@@ -124,10 +136,11 @@ angel.rent - The Art of Staying
     try {
         console.log('[SendGrid] Attempting to send email notification...')
         console.log('[SendGrid] From:', msg.from)
-        console.log('[SendGrid] To:', msg.to)
+        console.log('[SendGrid] To (recipients):', Array.isArray(msg.to) ? msg.to.join(', ') : msg.to)
+        console.log('[SendGrid] Number of recipients:', Array.isArray(msg.to) ? msg.to.length : 1)
 
         await sgMail.send(msg)
-        console.log('[SendGrid] ✅ Email sent successfully to', msg.to)
+        console.log('[SendGrid] ✅ Email sent successfully to all recipients:', Array.isArray(msg.to) ? msg.to.join(', ') : msg.to)
         return true
     } catch (error: any) {
         console.error('[SendGrid] ❌ Error sending email:', error.message || error)
