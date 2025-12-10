@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Italianno } from 'next/font/google'
 import './globals.css'
 
@@ -19,6 +19,16 @@ export const metadata: Metadata = {
   title: 'angel.rent - The Art of Staying',
   description: 'Boutique hospitality curated for international creatives and digital nomads in the heart of CDMX. Be the first to experience El Ángel.',
   keywords: ['boutique hospitality', 'CDMX', 'Reforma', 'luxury rental', 'creative sanctuary', 'digital nomads'],
+  manifest: '/site.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'angel.rent',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#C89B5D',
 }
 
 export default function RootLayout({
