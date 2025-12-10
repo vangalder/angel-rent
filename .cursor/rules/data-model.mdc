@@ -1,0 +1,80 @@
+# Data Model Standards
+
+## Single Source of Truth
+- **`data_model.md`** (or equivalent) is the canonical reference for all data structures
+- **Always read the data model documentation** before implementing features that touch:
+  - Database tables or collections
+  - Data schemas and structures
+  - API request/response formats
+  - Data transfer objects (DTOs)
+  - Entity relationships
+  - Data validation rules
+- **Never assume** data structures - verify against the documented data model
+
+## Mandatory Updates
+- **Update data model documentation immediately** when:
+  - Adding new database tables, collections, or schemas
+  - Modifying existing schemas (columns, fields, keys, indexes)
+  - Adding new fields to data entities
+  - Changing data relationships or constraints
+  - Modifying API request/response structures
+  - Updating data validation rules
+  - Changing data transformation logic
+  - Adding new data sources or integrations
+
+## Data Model Documentation Location
+
+The data model documentation may be located in:
+- `data_model.md` - Primary data model documentation
+- `docs/data-model.md` - Documentation directory
+- `schema/` - Schema definition directory
+- Database migration files - For schema evolution tracking
+- Type definitions - TypeScript types, GraphQL schemas, etc.
+- API documentation - OpenAPI/Swagger specs
+
+## Related Documentation
+
+When working with data models, also consult:
+- **API Reference**: API endpoint documentation
+- **Type Definitions**: TypeScript types, GraphQL schemas, etc.
+- **Validation Schemas**: Zod, Joi, JSON Schema, etc.
+- **Database Migrations**: Schema evolution history
+- **Entity Models**: ORM models, domain models, etc.
+
+## Implementation Checklist
+
+Before implementing any data-related feature:
+1. Read relevant sections of the data model documentation
+2. Verify type definitions match the documented schema
+3. Check if changes require data model documentation updates
+4. Update documentation BEFORE or WITH code changes
+5. Ensure API documentation stays in sync
+6. Update validation schemas if applicable
+7. Consider database migration if schema changes are involved
+
+## Platform-Specific Considerations
+
+### Relational Databases (MySQL, PostgreSQL, etc.)
+- Document table schemas, relationships, and constraints
+- Track migrations and schema evolution
+- Document indexes and query patterns
+
+### NoSQL Databases (MongoDB, DynamoDB, etc.)
+- Document collection/document structures
+- Define field types and validation rules
+- Document query patterns and indexes
+
+### GraphQL
+- Maintain schema definitions
+- Document types, queries, and mutations
+- Keep resolver implementations in sync
+
+### REST APIs
+- Document request/response schemas
+- Maintain OpenAPI/Swagger specifications
+- Keep DTOs aligned with documentation
+
+### TypeScript/JavaScript
+- Ensure TypeScript interfaces match data model
+- Keep runtime validation schemas (Zod, Joi) in sync
+- Document type relationships
