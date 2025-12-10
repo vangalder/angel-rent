@@ -84,53 +84,45 @@ export async function POST(request: NextRequest) {
         // Save to storage
         const entry = await saveWaitlistEntry(email)
 
-        // Get geolocation (non-blocking, with timeout)
-        console.log('[Waitlist API] Triggering email notification for:', entry.email)
+        // Send email notification (non-blocking, fire and forget)
+        console.log('[Waitlist API] ===== EMAIL NOTIFICATION TRIGGERED =====')
+        console.log('[Waitlist API] Email:', entry.email)
         console.log('[Waitlist API] IP address:', ip)
+        console.log('[Waitlist API] Timestamp:', entry.timestamp)
 
-        // Function to send email with or without geolocation
-        const sendEmailWithGeolocation = (geolocation: any) => {
-            sendWaitlistNotification({
-                email: entry.email,
-                timestamp: entry.timestamp,
-                ipAddress: ip !== 'unknown' ? ip : undefined,
-                geolocation: geolocation || undefined,
-            })
-                .then(success => {
-                    if (success) {
-                        console.log('[Waitlist API] ✅ Email notification sent successfully')
-                    } else {
-                        console.error('[Waitlist API] ❌ Email notification failed (check logs above for details)')
-                    }
-                })
-                .catch(error => {
-                    console.error('[Waitlist API] ❌ Exception while sending email notification:', error)
-                })
-        }
-
-        // Get geolocation with 2 second timeout
-        const geolocationPromise = getGeolocationFromIP(ip).catch(error => {
-            console.error('[Waitlist API] Geolocation lookup failed:', error)
-            return null
+        // Send email immediately - don't wait for geolocation
+        // This ensures email always sends in serverless environment
+        const emailPromise = sendWaitlistNotification({
+            email: entry.email,
+            timestamp: entry.timestamp,
+            ipAddress: ip !== 'unknown' ? ip : undefined,
+            geolocation: undefined, // Send without geolocation to ensure reliability
         })
-
-        const timeoutPromise = new Promise<null>(resolve =>
-            setTimeout(() => {
-                console.log('[Waitlist API] Geolocation lookup timeout, sending email without geolocation')
-                resolve(null)
-            }, 2000)
-        )
-
-        // Wait for geolocation (with timeout) before sending email
-        // Always send email, even if geolocation fails or times out
-        Promise.race([geolocationPromise, timeoutPromise])
-            .then(geolocation => {
-                sendEmailWithGeolocation(geolocation)
+            .then(success => {
+                if (success) {
+                    console.log('[Waitlist API] ✅✅✅ EMAIL NOTIFICATION SENT SUCCESSFULLY ✅✅✅')
+                } else {
+                    console.error('[Waitlist API] ❌❌❌ EMAIL NOTIFICATION FAILED - check SendGrid logs ❌❌❌')
+                }
+                return success
             })
             .catch(error => {
-                console.error('[Waitlist API] ❌ Error in geolocation flow, sending email without geolocation:', error)
-                // Always send email, even if geolocation completely fails
-                sendEmailWithGeolocation(null)
+                console.error('[Waitlist API] ❌❌❌ EXCEPTION SENDING EMAIL:', error)
+                console.error('[Waitlist API] Error stack:', error instanceof Error ? error.stack : 'No stack')
+                return false
+            })
+
+        // Keep reference to promise to prevent garbage collection
+        // In serverless, we can't await, but we can ensure it's tracked
+        emailPromise.catch(() => { }) // Swallow errors to prevent unhandled rejection
+
+        // Start geolocation lookup in background (non-blocking, for future use)
+        getGeolocationFromIP(ip)
+            .then(geo => {
+                console.log('[Waitlist API] ✅ Geolocation completed:', geo)
+            })
+            .catch(err => {
+                console.error('[Waitlist API] Geolocation failed:', err)
             })
 
         return NextResponse.json(
